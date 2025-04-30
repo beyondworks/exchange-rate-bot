@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-NOTION_TOKEN = "ntn_Mji634367343MHzgvNieIudYbIjS6wca8HvHmM13C9Z6uo"
+NOTION_TOKEN = "ntn_Mji634367343MHzgvNieIudYbIjS6wca8HvHmM13C9Z6uo력"
 DATABASE_ID = "1e3003c7f7be819b880ac6b5d6a10fe7"
 
 headers = {
@@ -11,18 +11,23 @@ headers = {
 }
 
 def get_exchange_rates():
-    url = "https://api.exchangerate.host/latest?base=KRW&symbols=USD,EUR,JPY"
+    api_key = "QBso6Jd7FDgbzTUsxz2ZFtFTJHtFpUNG"
+    today = datetime.now().strftime("%Y%m%d")
+    url = f"https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey={api_key}&searchdate={today}&data=AP01"
     res = requests.get(url)
     data = res.json()
-    # KRW 기준이므로 역수로 변환 (1달러=KRW, 1유로=KRW, 100엔=KRW)
-    usd_krw = 1 / data['rates']['USD']
-    eur_krw = 1 / data['rates']['EUR']
-    jpy_krw = 100 / data['rates']['JPY']  # 100엔 기준
-    return {
-        "USD": round(usd_krw, 2),
-        "EUR": round(eur_krw, 2),
-        "JPY": round(jpy_krw, 2)
-    }
+    print("API 응답:", data)
+
+    rates = {}
+    for item in data:
+        if item['cur_unit'] == 'USD':
+            rates['USD'] = float(item['deal_bas_r'].replace(',', ''))
+        elif item['cur_unit'] == 'EUR':
+            rates['EUR'] = float(item['deal_bas_r'].replace(',', ''))
+        elif item['cur_unit'] == 'JPY(100)':
+            rates['JPY'] = round(float(item['deal_bas_r'].replace(',', '')) / 100, 2)
+    print("최종 환율:", rates)
+    return rates
 
 def get_all_rows():
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
@@ -33,9 +38,9 @@ def update_row(page_id, rates):
     url = f"https://api.notion.com/v1/pages/{page_id}"
     data = {
         "properties": {
-            "달러(USD) 환율": {"number": rates["USD"]},
-            "유로(EUR) 환율": {"number": rates["EUR"]},
-            "엔화(JPY) 환율": {"number": rates["JPY"]},
+            "달러(USD) 환율": {"number": rates.get("USD", 0)},
+            "유로(EUR) 환율": {"number": rates.get("EUR", 0)},
+            "엔화(JPY) 환율": {"number": rates.get("JPY", 0)},
             "날짜": {"date": {"start": datetime.now().strftime("%Y-%m-%d")}}
         }
     }
@@ -46,4 +51,4 @@ if __name__ == "__main__":
     rows = get_all_rows()
     for row in rows:
         update_row(row["id"], rates)
-    print("환율 자동 업데이트 완료!")
+    print("환율 자동 업데이트 완료!") 
