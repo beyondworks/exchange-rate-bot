@@ -2,8 +2,10 @@ import requests
 from datetime import datetime
 
 NOTION_TOKEN = "ntn_Mji634367343MHzgvNieIudYbIjS6wca8HvHmM13C9Z6uo"
-DATABASE_ID = "1e3003c7f7be819b880ac6b5d6a10fe7",
+DATABASE_IDS = [
+    "1e3003c7f7be819b880ac6b5d6a10fe7",
     "1d7003c7f7be804cabbdef6bba0d929d"
+]
 
 headers = {
     "Authorization": f"Bearer {NOTION_TOKEN}",
