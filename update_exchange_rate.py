@@ -11,15 +11,17 @@ headers = {
 }
 
 def get_exchange_rates():
-    url = "https://api.exchangerate.host/latest?base=KRW&symbols=USD,EUR,JPY"
+    api_key = "8c5c329c0edccb20c422ae70"
+    url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/KRW"
     res = requests.get(url)
     data = res.json()
     print("API 응답:", data)
-    if 'rates' not in data:
+    if data['result'] != 'success':
         raise Exception(f"환율 API 응답 오류: {data}")
-    usd_krw = 1 / data['rates']['USD']
-    eur_krw = 1 / data['rates']['EUR']
-    jpy_krw = 100 / data['rates']['JPY']  # 100엔 기준
+    # USD, EUR, JPY 환율 (KRW 기준)
+    usd_krw = 1 / data['conversion_rates']['USD']
+    eur_krw = 1 / data['conversion_rates']['EUR']
+    jpy_krw = 100 / data['conversion_rates']['JPY']  # 100엔 기준
     rates = {
         "USD": round(usd_krw, 2),
         "EUR": round(eur_krw, 2),
