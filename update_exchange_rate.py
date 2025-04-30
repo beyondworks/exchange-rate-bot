@@ -1,7 +1,8 @@
 import requests
 from datetime import datetime
 
-NOTION_TOKEN = "ntn_Mji634367343MHzgvNieIudYbIjS6wca8HvHmM13C9Z6uo력"
+NOTION_TOKEN = "NOTION_TOKEN = "ntn_Mji634367343MHzgvNieIudYbIjS6wca8HvHmM13C9Z6uo"
+"
 DATABASE_ID = "1e3003c7f7be819b880ac6b5d6a10fe7"
 
 headers = {
@@ -11,21 +12,21 @@ headers = {
 }
 
 def get_exchange_rates():
-    api_key = "QBso6Jd7FDgbzTUsxz2ZFtFTJHtFpUNG"
-    today = datetime.now().strftime("%Y%m%d")
-    url = f"https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey={api_key}&searchdate={today}&data=AP01"
+    # KRW 기준으로 USD, EUR, JPY 환율을 가져옴
+    url = "https://api.exchangerate.host/latest?base=KRW&symbols=USD,EUR,JPY"
     res = requests.get(url)
     data = res.json()
     print("API 응답:", data)
-
-    rates = {}
-    for item in data:
-        if item['cur_unit'] == 'USD':
-            rates['USD'] = float(item['deal_bas_r'].replace(',', ''))
-        elif item['cur_unit'] == 'EUR':
-            rates['EUR'] = float(item['deal_bas_r'].replace(',', ''))
-        elif item['cur_unit'] == 'JPY(100)':
-            rates['JPY'] = round(float(item['deal_bas_r'].replace(',', '')) / 100, 2)
+    if 'rates' not in data:
+        raise Exception(f"환율 API 응답 오류: {data}")
+    usd_krw = 1 / data['rates']['USD']
+    eur_krw = 1 / data['rates']['EUR']
+    jpy_krw = 100 / data['rates']['JPY']  # 100엔 기준
+    rates = {
+        "USD": round(usd_krw, 2),
+        "EUR": round(eur_krw, 2),
+        "JPY": round(jpy_krw, 2)
+    }
     print("최종 환율:", rates)
     return rates
 
@@ -51,4 +52,4 @@ if __name__ == "__main__":
     rows = get_all_rows()
     for row in rows:
         update_row(row["id"], rates)
-    print("환율 자동 업데이트 완료!") 
+    print("환율 자동 업데이트 완료!")
