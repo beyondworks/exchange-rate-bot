@@ -33,10 +33,11 @@ def get_exchange_rates():
     print("최종 환율:", rates)
     return rates
 
-def get_all_rows():
-    url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
+def get_all_rows(database_id):
+    url = f"https://api.notion.com/v1/databases/{database_id}/query"
     res = requests.post(url, headers=headers)
-    return res.json()["results"]
+    data = res.json()
+    return data["results"]
 
 def update_row(page_id, rates):
     url = f"https://api.notion.com/v1/pages/{page_id}"
@@ -52,7 +53,8 @@ def update_row(page_id, rates):
 
 if __name__ == "__main__":
     rates = get_exchange_rates()
-    rows = get_all_rows()
-    for row in rows:
-        update_row(row["id"], rates)
-    print("환율 자동 업데이트 완료!")
+    for db_id in DATABASE_IDS:
+        rows = get_all_rows(db_id)  # db_id를 넘겨줌
+        for row in rows:
+            update_row(row["id"], rates)
+    print("모든 데이터베이스에 환율 자동 업데이트 완료!")
