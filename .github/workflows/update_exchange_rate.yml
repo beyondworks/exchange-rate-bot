@@ -1,0 +1,22 @@
+name: Update Exchange Rate
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 오전 9시(한국시간)
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install requests
+        run: pip install requests
+      - name: Run update script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python update_exchange_rate.py
