@@ -11,7 +11,6 @@ headers = {
 }
 
 def get_exchange_rates():
-    # KRW 기준으로 USD, EUR, JPY 환율을 가져옴
     url = "https://api.exchangerate.host/latest?base=KRW&symbols=USD,EUR,JPY"
     res = requests.get(url)
     data = res.json()
