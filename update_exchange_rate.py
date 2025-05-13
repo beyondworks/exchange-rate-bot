@@ -45,7 +45,7 @@ def update_row(page_id, rates):
         }
     }
     requests.patch(url, headers=headers, json=data)
-if name == "main":
+if __name__ == "__main__":
     rates = get_exchange_rates()
     for db_id in DATABASE_IDS:
         rows = get_all_rows(db_id)  # db_id를 넘겨줌
