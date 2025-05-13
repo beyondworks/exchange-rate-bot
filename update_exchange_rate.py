@@ -24,7 +24,7 @@ def get_exchange_rates():
     # USD, EUR, JPY 환율 (KRW 기준)
     usd_krw = 1 / data['conversion_rates']['USD']
     eur_krw = 1 / data['conversion_rates']['EUR']
-    jpy_krw = 100 / data['conversion_rates']['JPY']  # 100엔 기준
+    jpy_krw = 1 / data['conversion_rates']['JPY']  # 100엔 기준
     rates = {
         "USD": round(usd_krw, 2),
         "EUR": round(eur_krw, 2),
